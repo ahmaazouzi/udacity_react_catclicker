@@ -8,25 +8,36 @@ class CatClicker extends React.Component{
 		this.state = {posts: props.posts, post: props.posts[0], counter: props.posts[0].data.count};
 		this.changeImage = this.changeImage.bind(this);
 		this.incrementCount = this.incrementCount.bind(this);
+		this.updateAll = this.updateAll.bind(this);
 	}
 
 	incrementCount(){
 		this.setState({counter: this.state.counter + 1});
 	}
 
+	updateAll(){
+		const selectedPost = this.state.posts.indexOf(this.state.post);
+		this.state.posts[selectedPost] = this.state.post;
+		const updatedPosts = this.state.posts;
+		let onePost = this.state.post;
+		onePost.data.count = this.state.counter;
+		this.setState({posts: updatedPosts, post: onePost});
+	}
+
 	changeImage(e){
+		this.updateAll();
 		const postId = e.target.id;
 		const selectedPost = this.props.posts.filter((post) => post.id == postId)[0];
 		this.setState({post: selectedPost, counter: selectedPost.data.count});
 	}
 	render(){
-		const posts = this.props.posts;
+		const posts = this.state.posts;
 		const buttonas = posts.map(post => <button style={{marginLeft:2+'em'}} key={post.id} id={post.id} onClick={this.changeImage}>{post.data.name}</button>);
 		return(
 			<div>
 			<div>{buttonas}</div>
 			<img alt='' src={this.state.post.data.source} onClick={this.incrementCount}></img>
-			<div>{this.state.counter}</div>
+			<div><h1>{this.state.post.data.name + ': ' + this.state.counter}</h1></div>
 			</div>
 		)
 	}
