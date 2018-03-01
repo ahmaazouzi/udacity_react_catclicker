@@ -2,33 +2,44 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+class Image extends React.Component{
+	render(){
+		return (
+			<div>
+			<img alt='' src={this.props.post.data.source} onClick={this.props.incrementCount}></img>
+			<div><h1>{this.props.post.data.name + ': ' + this.props.post.data.count}</h1></div>
+			</div>
+			)
+	}
+}
+
 class CatClicker extends React.Component{
 	constructor(props){
 		super(props);
-		this.state = {posts: props.posts, post: props.posts[0], counter: props.posts[0].data.count};
+		this.state = {posts: props.posts, post: props.posts[0]};
 		this.changeImage = this.changeImage.bind(this);
 		this.incrementCount = this.incrementCount.bind(this);
-		this.updateAll = this.updateAll.bind(this);
+		this.updatePosts = this.updatePosts.bind(this);
 	}
 
 	incrementCount(){
-		this.setState({counter: this.state.counter + 1});
+		const newPost = Object.assign({}, this.state.post);
+		newPost.data.count++;
+		this.setState({post: newPost});
 	}
 
-	updateAll(){
+	updatePosts(){
 		const selectedPost = this.state.posts.indexOf(this.state.post);
-		this.state.posts[selectedPost] = this.state.post;
-		const updatedPosts = this.state.posts;
-		let onePost = this.state.post;
-		onePost.data.count = this.state.counter;
-		this.setState({posts: updatedPosts, post: onePost});
+		let posts = Object.assign([], this.state.posts);
+		posts[selectedPost] = this.state.post;
+		this.setState({posts: posts});
 	}
 
 	changeImage(e){
-		this.updateAll();
+		this.updatePosts();
 		const postId = e.target.id;
-		const selectedPost = this.props.posts.filter((post) => post.id == postId)[0];
-		this.setState({post: selectedPost, counter: selectedPost.data.count});
+		const selectedPost = this.props.posts.filter((post) => post.id.toString() === postId)[0];
+		this.setState({post: selectedPost});
 	}
 	render(){
 		const posts = this.state.posts;
@@ -36,8 +47,7 @@ class CatClicker extends React.Component{
 		return(
 			<div>
 			<div>{buttonas}</div>
-			<img alt='' src={this.state.post.data.source} onClick={this.incrementCount}></img>
-			<div><h1>{this.state.post.data.name + ': ' + this.state.counter}</h1></div>
+			<Image posts={this.state.posts} post={this.state.post} incrementCount={this.incrementCount}/>
 			</div>
 		)
 	}
